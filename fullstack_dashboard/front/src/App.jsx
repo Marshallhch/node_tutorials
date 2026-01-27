@@ -9,7 +9,7 @@ const App = () => {
     <div className='App w-screen flex items-center justify-center flex-col dark:bg-[#212121] dark:text-white'>
       <div className='page-wrapper min-h-screen flex w-full'>
         <Sidebar />
-        <div className='content-wrapper w-full ml-[25%]'>
+        <div className='content-wrapper w-full'>
           <Appbar />
           <DashboardScreen />
         </div>
