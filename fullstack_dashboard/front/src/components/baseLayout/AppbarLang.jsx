@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { REST_COUNTRIES_API_URL } from '../../constants/apiUrls'
 import { Icons } from '../../assets/icons'
 import axios from 'axios'
@@ -9,7 +9,33 @@ const AppbarLang = () => {
   const [selectedCountry, setSelectedCountry] = useState(null)
   const [isDroplistEnabled, setIsDroplistEnabled] = useState(false)
 
+  const countryLangRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // ref 안에 클릭이 포함되어 있지 않으면 닫기
+      console.log(e.target)
+      if (!countryLangRef.current.contains(e.target)) {
+        setIsDroplistEnabled(false);
+      }
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    return () => { // clean up
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+  
   const handleDroplistEnable = () => setIsDroplistEnabled(!isDroplistEnabled)
+
+  const countrySelectedHandler = (country, flag, lang) => {
+    setSelectedCountry({
+      country: country,
+      flag: flag,
+      language: lang
+    })
+    setIsDroplistEnabled(false)
+  }
 
   useEffect(() => {
     const fetchCountryData = async () => {
@@ -35,12 +61,8 @@ const AppbarLang = () => {
     fetchCountryData()
   }, [])
 
-  // countries.map((a) => {
-  //   console.log(a)
-  // })
-
   return (
-    <div className='appbar-dropdown relative w-30 h-10 mx-7'>
+    <div className='appbar-dropdown relative w-30 h-10 mx-7' ref={countryLangRef}>
       <div className='drop-selected flex items-center w-full h-full gap-x-3 px-1 py-3 cursor-pointer' onClick={handleDroplistEnable}>
         <div className='drop-selected-img w-6 h-6 min-w-6 overflow-hidden rounded-full'>
           <img src={selectedCountry?.flag} alt="" className='w-full h-full object-cover' />
@@ -60,11 +82,19 @@ const AppbarLang = () => {
                   const langKey = Object.keys(country.languages)[0]
 
                   return (
-                    <div key={country.name.common}>
-                      <span>
-                        <img src={country.flags.png} alt="" />
+                    <div 
+                      key={country.name.common} 
+                      className='drop-item flex items-center gap-x-3 cursor-pointer dark:text-white py-1 px-0 delay-300 ease-in-out transiton hover:dark:bg-gray-700 hover:bg-slate-100'
+                      onClick={() => {countrySelectedHandler(
+                        country?.name?.common,
+                        country?.flags?.png,
+                        langKey
+                      )}} 
+                    >
+                      <span className='drop-item-img w-4 h-4 min-w-4 overflow-hidden rounded-full'>
+                        <img src={country.flags.png} alt="" className='w-full h-full object-cover' />
                       </span>
-                      <span>
+                      <span className='drop-item-text text-sm uppercase font-medium'>
                         {langKey}
                       </span>
                     </div>
