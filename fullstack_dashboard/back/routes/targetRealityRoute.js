@@ -1,15 +1,15 @@
-const router = require('express').Router() // express에서 제공하는 라우트 메서드 저장
-const revenueController = require('../controllers/revenueController')
+const router = require('express').Router()
+const targetRealityController = require('../controllers/targetRealityController')
 
 /**
  * @swagger
- * /revenue:
+ * /target_reality:
  *   get:
- *     summary: 요일별 매출 데이터 조회
- *     tags: [Revenue]
+ *     summary: 월별 목표 대비 실적 데이터 조회
+ *     tags: [Target Reality]
  *     responses:
  *       200:
- *         description: 매출 목록 반환
+ *         description: 목표/실적 목록 반환
  *         content:
  *           application/json:
  *             schema:
@@ -19,11 +19,11 @@ const revenueController = require('../controllers/revenueController')
  *                 properties:
  *                   id:
  *                     type: integer
- *                   day:
+ *                   month:
  *                     type: string
- *                   online:
+ *                   reality:
  *                     type: integer
- *                   offline:
+ *                   target:
  *                     type: integer
  *                   create_date:
  *                     type: string
@@ -34,6 +34,6 @@ const revenueController = require('../controllers/revenueController')
  *       500:
  *         description: 서버 에러
  */
-router.get('/revenue', revenueController.getRevenue)
+router.get('/target_reality', targetRealityController.getTargetReality)
 
 module.exports = router
