@@ -14,6 +14,22 @@ const Customers = () => {
 
   // console.log(state)
 
+  const formatLegendValue = (value, name) => {
+    const initialValue = 0
+    const totalValue = state?.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue[name.dataKey];
+    }, initialValue)
+
+    return (
+      <span className='custom-legend-item-text-group'>
+        <span className='custom-legend-item-text'>
+          {value.replace('_', ' ')} {/*last_month -> last month 2015 */}
+        </span>
+        <span>{' ' + totalValue}</span>
+      </span>
+    )
+  }
+
   return (
     <div className='block-wrap mt-[14px] ml-[14px]'>
       <div className='block-head'>
@@ -31,19 +47,31 @@ const Customers = () => {
             }}
           >
             <Tooltip />
-            <Legend />
+            <Legend formatter={formatLegendValue} />
+
+            <defs>
+              <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#0095ff" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#0095ff" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#07e098" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#07e098" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+
             <Area 
               type="monotone" 
               dataKey="last_month"  
               stroke="#0095ff" 
-              fill="#0095ff" 
+              fill="url(#colorUv)" 
             />
 
             <Area 
               type="monotone" 
               dataKey="this_month"  
               stroke="#07e098" 
-              fill="#07e098" 
+              fill="url(#colorPv)"
             />
           </AreaChart>
         </ResponsiveContainer>
