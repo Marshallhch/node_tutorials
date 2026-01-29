@@ -6,6 +6,7 @@ import {
   GET_TARGETREALITY_API_URL,
   GET_TOP_PRODUCTS_API_URL,
   GET_SALES_MAP_API_URL,
+  GET_VOLUME_SERVICES_URL,
 } from '../../constants/apiUrls';
 import { getRequest } from '../../constants/requestMethods';
 
@@ -52,6 +53,12 @@ export const fetchSalesMap = createFetchThunk(
   GET_SALES_MAP_API_URL,
 );
 
+// GET Volume Services
+export const fetchVolumeServices = createFetchThunk(
+  'fetchVolumeServices',
+  GET_VOLUME_SERVICES_URL,
+);
+
 const handleFulfilled = (stateKey) => (state, action) => {
   state[stateKey] = action.payload;
 };
@@ -70,6 +77,7 @@ const apisSlice = createSlice({
     targetRealityData: null,
     topProductsData: null,
     salesMapData: null,
+    volumeServicesData: null,
     isError: false,
   },
   extraReducers: (builder) => {
@@ -93,7 +101,13 @@ const apisSlice = createSlice({
       .addCase(fetchTopProducts.rejected, handleRejected)
 
       .addCase(fetchSalesMap.fulfilled, handleFulfilled('salesMapData'))
-      .addCase(fetchSalesMap.rejected, handleRejected);
+      .addCase(fetchSalesMap.rejected, handleRejected)
+
+      .addCase(
+        fetchVolumeServices.fulfilled,
+        handleFulfilled('volumeServicesData'),
+      )
+      .addCase(fetchVolumeServices.rejected, handleRejected);
   },
 });
 
