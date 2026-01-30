@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icons } from '../../assets/icons';
 import { MdOutlineClose } from 'react-icons/md';
 import { MENU_LISTS, routes } from '../../constants/menuList';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSidebarOpen } from '../../redux/slices/sidebarSlice';
+import {
+  setSidebarOpen,
+  setSidebarClose,
+} from '../../redux/slices/sidebarSlice';
 
 const Sidebar = () => {
   const [currentTab, clickedTab] = useState(0);
@@ -12,7 +15,24 @@ const Sidebar = () => {
   const isSidebarOpen = useSelector((state) => state.sidebar.isSidebarOpen);
   const dispatch = useDispatch();
 
-  console.log(isSidebarOpen);
+  // console.log(isSidebarOpen);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1590) {
+        dispatch(setSidebarOpen());
+      } else {
+        dispatch(setSidebarClose());
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [dispatch]);
 
   const selectMenuHandler = (index) => {
     clickedTab(index);
@@ -72,7 +92,9 @@ const Sidebar = () => {
                       <img src={menu.icon} alt={menu.alt} />
                     </span>
                     <span
-                      className={`${index === currentTab ? 'text-white dark:text-white' : ''}`}
+                      className={`${
+                        index === currentTab ? 'text-white dark:text-white' : ''
+                      }`}
                     >
                       {menu.title}
                     </span>
