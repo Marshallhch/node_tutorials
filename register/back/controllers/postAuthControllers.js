@@ -9,8 +9,10 @@ const database = require('../database/database');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-const uid = uuidv4();
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+
+const uid = uuidv4();
 
 exports.postAuth = async (request, response) => {
   const { username, email, password } = request.body;
@@ -34,8 +36,6 @@ exports.postAuth = async (request, response) => {
     var saltRounds = 10;
     var salt = bcrypt.genSaltSync(saltRounds);
     var hashPassword = bcrypt.hashSync(password, salt);
-
-    console.log(hashPassword);
 
     // 프로필 이미지 저장 경로 설정
     let profileImagePath = null;
@@ -61,5 +61,56 @@ exports.postAuth = async (request, response) => {
     return response
       .status(500)
       .json({ message: '데이터 입력 오류: ' + error.message });
+  }
+};
+
+exports.postLogin = async (request, response) => {
+  const { email, password } = request.body;
+
+  // console.log(process.env.JWT_SECRET);
+
+  // 1. 이메일 존재 확인
+  // 2. 비밀번호 일치 확인
+  // 3. 회원 정보 암호화 하여 반환(jwt)
+
+  try {
+    const rows = await database.pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email],
+    );
+
+    if (rows.rows.length === 0) {
+      return response
+        .status(200)
+        .json({ meesage: '존재하지 않는 이메일 입니다.', success: false });
+    }
+
+    const isMatch = await bcrypt.compare(password, rows.rows[0].password);
+
+    if (!isMatch) {
+      return response
+        .status(200)
+        .json({ message: '비밀번호가 일치하지 않습니다.', success: false });
+    }
+
+    const token = jwt.sign(
+      // 파라미터 순서 유지
+      {
+        id: rows.rows[0].id,
+        username: rows.rows[0].username,
+        email: rows.rows[0].email,
+        profile_image: rows.rows[0].profile_image,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '3h',
+      },
+    );
+
+    return response.status(201).json({ token, success: true });
+  } catch (error) {
+    return response
+      .status(500)
+      .json({ message: '로그인 오류: ' + error.message });
   }
 };
