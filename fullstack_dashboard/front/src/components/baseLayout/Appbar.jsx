@@ -10,6 +10,8 @@ import { setSidebarClose } from '../../redux/slices/sidebarSlice';
 const Appbar = () => {
   const isSidebarOpen = useSelector((state) => state.sidebar.isSidebarOpen);
   const dispatch = useDispatch();
+
+  console.log(isSidebarOpen);
   return (
     <div
       className={`dark:bg-gray-950 bg-white dark:shadow-[0_0.125rem_0.25rem_rgba(255,255,255,0.3)] shadow-[0_0.125rem_0.25rem_rgba(165,163,174,0.3)] py-3 px-6 rounded-sm dark:text-white text-gray-950 ${
